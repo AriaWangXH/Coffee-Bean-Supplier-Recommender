@@ -4,8 +4,17 @@
 Project created by Xiaohan (Aria) Wang, with QA by Yige (Irene) Lai.
 
 ## Project Charter
+<!-- toc -->
+### Vission
+### Mission
+### Success criteria
+
 
 ## Backlog
+<!-- toc -->
+- Initiative 1
+  * Epic 1
+    + Story 1
 
 
 # MSiA423 Template Repository
