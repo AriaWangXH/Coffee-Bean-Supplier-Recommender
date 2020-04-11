@@ -1,3 +1,13 @@
+# MSiA423 Project Repository
+
+<!-- toc -->
+Project created by Xiaohan (Aria) Wang, with QA by Yige (Irene) Lai.
+
+## Project Charter
+
+## Backlog
+
+
 # MSiA423 Template Repository
 
 <!-- toc -->
