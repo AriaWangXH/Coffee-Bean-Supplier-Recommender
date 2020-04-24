@@ -59,7 +59,7 @@ The k-means clustering models will be evaluated by comparing their sum of square
 
 ** Explanation on the story points above:
 
-0 points - quick chore; 1 point ~ 1 hour (small); 2 points ~ 1/2 day (medium); 4 points ~ 1 day (large); 8 points - big and needs to be broken down more when it comes to execution
+0 points - quick chore; 1 point ~ 1 hour (small); 2 points ~ 1/2 day (medium); 4 points ~ 1 day (large); 8 points - big and needs to be broken down more when it comes to execution.
 
 
 # MSiA423 Template Repository
