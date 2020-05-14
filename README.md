@@ -23,7 +23,7 @@ The k-means clustering models will be evaluated by comparing their sum of square
 ### Planning
 - Initiative 1. Build clustering models.
   * Epic 1. Prepare the data for analysis.
-    + Story 1. Scrape the data from CQI website with the reference code from [this GitHub repository](https://github.com/jldbc/coffee-quality-database).
+    + Story 1. Download the dataset from [this Kaggle page](https://www.kaggle.com/volpatto/coffee-quality-database-from-cqi).
     + Story 2. Clean the data and correct inconsistencies due to human recording.
     + Stroy 3. Setting up RDS to query from the app.
   * Epic 2. Conduct exploratory data analysis.
