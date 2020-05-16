@@ -1,10 +1,108 @@
 # MSiA423 Project (Beans!) Repository
 
 <!-- toc -->
-Project created by Xiaohan (Aria) Wang, with QA by Yige (Irene) Lai.
+- Developer - Xiaohan (Aria) Wang
+- Quality Assurance - Yige (Irene) Lai.
+
+
 
 - [Project Charter](#project-charter)
 - [Backlog](#backlog)
+
+## Running the app
+### Acquire the data 
+
+- Download the dataset from [this Kaggle page](https://www.kaggle.com/volpatto/coffee-quality-database-from-cqi?select=merged_data_cleaned.csv).
+Make sure to choose the `merged_data_cleaned.csv` data file and then click the 'Download' button.
+
+- Move the downloaded data file under the `data/external` folder.
+Or move the file to other places and be sure to specify the new location in `src/config.py` after `DOWNLOADED_DATA_PATH = `.
+
+
+### Write the data to S3 bucket
+- Specify the S3 bucket and object name in `src/config.py` after `S3_BUCKET_NAME` and `S3_OBJECT_NAME`.
+
+- To build the Docker image, run from this directory (the root of the repo):
+
+```bash
+ docker build -f app/Dockerfile -t bean .
+```
+
+- Run the following command with your AWS credentials.
+
+```bash
+docker run -e AWS_ACCESS_KEY_ID=<aws_key> -e AWS_SECRET_ACCESS_KEY=<aws_secret_key> bean src/write_to_s3.py
+```
+
+### Create the database
+Option 1. Create a local SQLite database
+
+- Go to `src/config.py`, specify `True` for `LOCAL_DB_FLAG`. 
+
+- Change the default local database path `data/bean.db` if needed.
+
+- Build the Docker image with the command below:
+
+```bash
+ docker build -f app/Dockerfile -t bean .
+```
+
+- Run the following command to create local SQLite database.
+
+```bash
+docker run --mount type=bind,source="$(pwd)"/data,target=/app/data bean src/bean_db.py
+```
+
+*Note: When recreating the database, add `--truncate` or `--t` at the end of the line above to avoid IntegrityError.*
+
+Option 2. Create an AWS RDS database (*Note: connect to Northwestern VPN for this option*)
+
+- Go to `src/config.py`, specify `False` for `LOCAL_DB_FLAG`
+
+- Run the command below and update the information.
+
+```bash
+vi .mysqlconfig
+```
+1) Set `MYSQL_USER` to the “master username” that you used to create the database server.
+2) Set `MYSQL_PASSWORD` to the “master password” that you used to create the database server. 
+3) Set `MYSQL_HOST` to be the RDS instance endpoint from the console
+4) Set `MYSQL_POST` to be 3306
+5) Set `DATABASE_NAME` to be the created database's name
+
+- Run the following command.
+
+```bash
+source .mysqlconfig
+```
+
+- Build the Docker image with the command below:
+
+```bash
+sh run_docker.sh
+```
+*Note: When recreating the database, add `--truncate` or `--t` inside `run_docker.sh` to avoid IntegrityError.*
+
+
+### Query a table
+Option 1. From SQLite
+
+- Query tables within SQLite with the SQLite application or through applications such as `SQLAlchemy` in Python.
+
+Option 2. From RDS
+
+- After `.mysqlconfig` is set up, run the following command:
+
+```bash
+sh run_mysql_client.sh
+```
+
+- Run `show databases` to view the databases
+- Run `show tables from <YOUR-DATABASE>` to view the tables in `<YOUR-DATABASE>`
+- Run `select * from <YOUR-DATABASE>.<YOUR-TABLE>` to query the table
+
+
+
 
 <!-- tocstop -->
 
@@ -23,7 +121,7 @@ The k-means clustering models will be evaluated by comparing their sum of square
 ### Planning
 - Initiative 1. Build clustering models.
   * Epic 1. Prepare the data for analysis.
-    + Story 1. Scrape the data from CQI website with the reference code from [this GitHub repository](https://github.com/jldbc/coffee-quality-database).
+    + Story 1. Download the data from [this Kaggle page](https://www.kaggle.com/volpatto/coffee-quality-database-from-cqi?select=merged_data_cleaned.csv).
     + Story 2. Clean the data and correct inconsistencies due to human recording.
   * Epic 2. Conduct exploratory data analysis.
     + Story 1. Capture patterns within the data and have a basic idea of the key variables in the clustering analysis.
@@ -61,6 +159,10 @@ The k-means clustering models will be evaluated by comparing their sum of square
 
 0 points - quick chore; 1 point ~ 1 hour (small); 2 points ~ 1/2 day (medium); 4 points ~ 1 day (large); 8 points - big and needs to be broken down more when it comes to execution.
 
+
+
+
+<!-- toc -->
 
 # MSiA423 Template Repository
 
@@ -172,7 +274,7 @@ engine_string = 'sqlite://///Users/cmawer/Repos/2020-MSIA423-template-repository
 
 ```python
 DEBUG = True  # Keep True for debugging, change to False when moving to production 
-LOGGING_CONFIG = "config/logging/local.conf"  # Path to file that configures Python logger
+LOGGING_CONFIG = "config/logging/logging.conf"  # Path to file that configures Python logger
 HOST = "0.0.0.0" # the host that is running the app. 0.0.0.0 when running locally 
 PORT = 5000  # What port to expose app on. Must be the same as the port exposed in app/Dockerfile 
 SQLALCHEMY_DATABASE_URI = 'sqlite:///data/tracks.db'  # URI (engine string) for database that contains tracks

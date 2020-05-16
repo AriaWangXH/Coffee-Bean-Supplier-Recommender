@@ -1,5 +1,5 @@
 DEBUG = True
-LOGGING_CONFIG = "config/logging/local.conf"
+LOGGING_CONFIG = "config/logging/logging.conf"
 PORT = 5000
 APP_NAME = "penny-lane"
 SQLALCHEMY_DATABASE_URI = 'sqlite:///data/tracks.db'

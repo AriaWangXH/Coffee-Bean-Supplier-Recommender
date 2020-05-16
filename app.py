@@ -3,7 +3,7 @@ from flask import render_template, request, redirect, url_for
 import logging.config
 # from app.models import Tracks
 from flask import Flask
-from src.add_songs import Tracks
+from src.bean_db import Tracks
 from flask_sqlalchemy import SQLAlchemy
 
 
@@ -14,7 +14,7 @@ app = Flask(__name__, template_folder="app/templates")
 app.config.from_pyfile('config/flaskconfig.py')
 
 # Define LOGGING_CONFIG in flask_config.py - path to config file for setting
-# up the logger (e.g. config/logging/local.conf)
+# up the logger (e.g. config/logging/logging.conf)
 logging.config.fileConfig(app.config["LOGGING_CONFIG"])
 logger = logging.getLogger(app.config["APP_NAME"])
 logger.debug('Test log')
