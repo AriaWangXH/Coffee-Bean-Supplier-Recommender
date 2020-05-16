@@ -14,8 +14,8 @@ LOGGING_CONFIG = path.join(PROJECT_HOME, 'config/logging/logging.conf')
 DOWNLOADED_DATA_PATH = path.join(PROJECT_HOME, 'data/external/merged_data_cleaned.csv')
 
 # S3 bucket
-S3_BUCKET_NAME = 'msia423-bean'
-S3_OBJECT_NAME = 'merged_data_cleaned'
+S3_BUCKET_NAME = '<YOUR-S3-BUCKET-NAME>'
+S3_OBJECT_NAME = '<YOUR-S3-OBJECT-NAME>'
 
 # SQLite database connection config
 LOCAL_DB_FLAG = True  # If true, create a local SQLite database
