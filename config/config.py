@@ -14,14 +14,20 @@ LOGGING_CONFIG = path.join(PROJECT_HOME, 'config/logging/logging.conf')
 DOWNLOADED_DATA_PATH = path.join(PROJECT_HOME, 'data/external/merged_data_cleaned.csv')
 
 # S3 bucket
-S3_BUCKET_NAME = '<YOUR-S3-BUCKET-NAME>'
-S3_OBJECT_NAME = '<YOUR-S3-OBJECT-NAME>'
+S3_BUCKET_NAME = 'msia423-bean'
+S3_OBJECT_NAME = 'merged_data_cleaned'
+S3_PUBLIC_KEY = 'AKIAIOFALU7CV5Z6R33Q'
+S3_SECRET_KEY = 'Hdk8EWhoY52miz5Bm/4RFE+VmphRoXUj/MXFXFS9'
 
 # SQLite database connection config
+DATA_TABLE_PATH = path.join(PROJECT_HOME, 'data/clusters.csv')
 LOCAL_DB_FLAG = True  # If true, create a local SQLite database
 LOCAL_DB_NAME = 'data/bean.db'
 LOCAL_DATABASE_PATH = path.join(PROJECT_HOME, LOCAL_DB_NAME)
 SQLALCHEMY_TRACK_MODIFICATIONS = True
 SQLALCHEMY_ECHO = False  # If true, SQL for queries made will be printed
+
+# YAML for modeling
+YAML_PATH = path.join(PROJECT_HOME, 'config/config.yaml')
 
 

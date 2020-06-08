@@ -2,42 +2,112 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <link href="static/basic.css" rel="stylesheet">
+    <link href="./basic.css" rel="stylesheet">
+    <style>
+        body {
+        background-image: url('background.png');
+        }
+
+        h1 {
+            font-family: "Lucida Sans Unicode", "Lucida Grande", sans-serif;
+            }
+
+        p.a {
+            font-family: Arial, Helvetica, sans-serif;
+            font-size: 90%
+            }
+
+        table {
+              border-collapse: collapse;
+              width: 100%;
+              }
+        th, td {
+              padding: 8px;
+              text-align: left;
+              border-bottom: 1px solid #ddd;
+                }
+
+        tr:hover {background-color:#f5f5f5;}
+    </style>
 </head>
 
 <body>
-    <h3>
-         <a href = "{{ url_for('index') }}">Penny Lane Music Recommender</a>
-    </h3>
+    <div class="header">
+      <h1 style="text-align:center">Bean!</h1>
+      <p style="text-align:center"><i>Coffee bean ratings from the Coffee Quality Institute</i></p>
+    </div>
+
+    <p class = "a" style="text-align:center">
+         <a href = "{{ url_for('index') }}">Go to the main page</a>
+    </p>
 
     <hr/>
-    <table>
+    <p class="a">Type in the scores below for your desired coffee beans:</p>
+    </table>
+      <form action="{{ url_for('index') }}" method=post class=add-entry>
+      <dl>
+        <input type=text size=14 name=aroma placeholder="Aroma (0-10)">
+        <input type=text size=14 name=aftertaste placeholder="Aftertaste (0-10)">
+        <input type=text size=14 name=acidity placeholder="Acidity (0-10)">
+        <input type=text size=14 name=sweetness placeholder="Sweetness (0-10)">
+        <input type=text size=14 name=moisture placeholder="Moisture (0-0.15)">
+        <input type=submit value=Search>
+      </dl>
+    </form>
+
+    <table style="font-size: 11px; font-family: ">
          <thead>
             <tr>
-               <th>Title</th>
-               <th>Artist</th>
-               <th>Album</th>
+               <th>Total cup point</th>
+               <th>Aroma</th>
+               <th>Aftertaste</th>
+               <th>Acidity</th>
+               <th>Sweetness</th>
+               <th>Moisture</th>
+               <th>Flavor</th>
+               <th>Body</th>
+               <th>Balance</th>
+               <th>Uniformity</th>
+               <th>Species</th>
+               <th>Owner</th>
+               <th>Country</th>
+               <th>Farm name</th>
+               <th>Company</th>
+               <th>Region</th>
+               <th>Producer</th>
+               <th>Processing method</th>
+               <th>Color</th>
+               <th>Grading date</th>
             </tr>
-         </thead>
+<!--         </thead>-->
 
          <tbody>
-            {% for track in tracks %}
+            {% for bean in beans %}
                <tr>
-                   <td>{{ track.title }}</td>
-                   <td>{{ track.artist }}</td>
-                   <td>{{ track.album }}</td>
+                   <th>{{ bean.total_cup_point }}</th>
+                   <td>{{ bean.aroma }}</td>
+                   <td>{{ bean.aftertaste }}</td>
+                   <td>{{ bean.acidity }}</td>
+                   <td>{{ bean.sweetness }}</td>
+                   <td>{{ bean.moisture }}</td>
+                   <td>{{ bean.flavor }}</td>
+                   <td>{{ bean.body }}</td>
+                   <td>{{ bean.balance }}</td>
+                   <td>{{ bean.uniformity }}</td>
+                   <td>{{ bean.species }}</td>
+                   <td>{{ bean.owner }}</td>
+                   <td>{{ bean.country }}</td>
+                   <td>{{ bean.farm_name }}</td>
+                   <td>{{ bean.company }}</td>
+                   <td>{{ bean.region }}</td>
+                   <td>{{ bean.producer }}</td>
+                   <td>{{ bean.processing_method }}</td>
+                   <td>{{ bean.color }}</td>
+                   <td>{{ bean.grading_date }}</td>
+
                </tr>
             {% endfor %}
          </tbody>
-      </table>
-      <form action="{{ url_for('add_entry') }}" method=post class=add-entry>
-      <dl>
-        <input type=text size=15 name=title placeholder="Title">
-        <input type=text size=15 name=artist placeholder="Artist">
-        <input type=text size=15 name=album placeholder="Album">
-        <input type=submit value=Add>
-      </dl>
-    </form>
 
 </body>
 </html>

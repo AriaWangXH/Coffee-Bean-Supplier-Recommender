@@ -1,9 +1,12 @@
 import traceback
 from flask import render_template, request, redirect, url_for
 import logging.config
-# from app.models import Tracks
 from flask import Flask
-from src.bean_db import Tracks
+import pandas as pd
+import pickle
+
+from src.train_model import predict_cluster
+from src.bean_db import BeanAttributes
 from flask_sqlalchemy import SQLAlchemy
 
 
@@ -14,7 +17,7 @@ app = Flask(__name__, template_folder="app/templates")
 app.config.from_pyfile('config/flaskconfig.py')
 
 # Define LOGGING_CONFIG in flask_config.py - path to config file for setting
-# up the logger (e.g. config/logging/logging.conf)
+# up the logger (e.g. config/logging/local.conf)
 logging.config.fileConfig(app.config["LOGGING_CONFIG"])
 logger = logging.getLogger(app.config["APP_NAME"])
 logger.debug('Test log')
@@ -23,43 +26,73 @@ logger.debug('Test log')
 db = SQLAlchemy(app)
 
 
-@app.route('/')
+@app.route('/', methods=['POST', 'GET'])
 def index():
     """Main view that lists songs in the database.
-
     Create view into index page that uses data queried from Track database and
     inserts it into the msiapp/templates/index.html template.
-
     Returns: rendered html template
-
     """
 
-    try:
-        tracks = db.session.query(Tracks).limit(app.config["MAX_ROWS_SHOW"]).all()
-        logger.debug("Index page accessed")
-        return render_template('index.html', tracks=tracks)
-    except:
-        traceback.print_exc()
-        logger.warning("Not able to display tracks, error page returned")
-        return render_template('error.html')
+    if request.method == 'POST':
+        try:
+            entries = pd.DataFrame({'Aroma': [request.form['aroma']], 'Aftertaste': [request.form['aftertaste']],
+                                    'Acidity': [request.form['acidity']], 'Sweetness': [request.form['sweetness']],
+                                    'Moisture': [request.form['moisture']]})
 
+            sc = pickle.load(open('models/feature_scaler.pkl', 'rb'))
+            model = pickle.load(open('models/kmeans-5-2020-06-07.pkl', 'rb'))
+            cluster_pred = predict_cluster(sc, entries, model)[0]
 
-@app.route('/add', methods=['POST'])
-def add_entry():
-    """View that process a POST with new song input
+            bean1 = BeanAttributes(
+                                   species='Unknown',
+                                   owner='Unknown',
+                                   country='Unknown',
+                                   farm_name='Unknown',
+                                   company='Unknown',
+                                   region='Unknown',
+                                   producer='Unknown',
+                                   grading_date='Unknown',
+                                   processing_method='Unknown',
+                                   aroma=request.form['aroma'],
+                                   flavor=0,
+                                   aftertaste=0,
+                                   acidity=0,
+                                   body=0,
+                                   balance=0,
+                                   uniformity=0,
+                                   cleancup=0,
+                                   sweetness=request.form['sweetness'],
+                                   total_cup_point=0,
+                                   moisture=request.form['moisture'],
+                                   color='Unknown',
+                                   cluster=cluster_pred)
+            db.session.add(bean1)
+            db.session.commit()
+            logger.info("New cluster predicted: {}".format(cluster_pred))
 
-    :return: redirect to index page
-    """
+            # beans = db.session.query(BeanAttributes).order_by(BeanAttributes.total_cup_point.desc()).limit(1)
 
-    try:
-        track1 = Tracks(artist=request.form['artist'], album=request.form['album'], title=request.form['title'])
-        db.session.add(track1)
-        db.session.commit()
-        logger.info("New song added: %s by %s", request.form['title'], request.form['artist'])
-        return redirect(url_for('index'))
-    except:
-        logger.warning("Not able to display tracks, error page returned")
-        return render_template('error.html')
+            beans = db.session.query(BeanAttributes).\
+                filter(BeanAttributes.cluster == 1).\
+                order_by(BeanAttributes.total_cup_point.desc()).limit(app.config["MAX_ROWS_SHOW"]).all()
+
+            return render_template('index.html', beans=beans)
+        except Exception as e:
+            traceback.print_exc()
+            logger.error("Not able to add mew record", e)
+            return render_template('error.html')
+
+    else:
+        try:
+            beans = db.session.query(BeanAttributes).order_by(BeanAttributes.total_cup_point.desc()).\
+                limit(app.config["MAX_ROWS_SHOW"])
+            logger.info("Successfully queried from the database")
+            return render_template('index.html', beans=beans)
+
+        except Exception as e:
+            logger.warning("Not able to display tracks, error page returned", e)
+            return render_template('error.html')
 
 
 if __name__ == '__main__':

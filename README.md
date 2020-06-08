@@ -12,23 +12,23 @@
 ## Running the app
 ### Acquire the data 
 
-- Download the dataset from [this Kaggle page](https://www.kaggle.com/volpatto/coffee-quality-database-from-cqi?select=merged_data_cleaned.csv).
+Download the dataset from [this Kaggle page](https://www.kaggle.com/volpatto/coffee-quality-database-from-cqi?select=merged_data_cleaned.csv).
 Make sure to choose the `merged_data_cleaned.csv` data file and then click the 'Download' button.
 
-- Move the downloaded data file under the `data/external` folder.
+Move the downloaded data file under the `data/external` folder.
 Or move the file to other places and be sure to specify the new location in `src/config.py` after `DOWNLOADED_DATA_PATH = `.
 
 
 ### Write the data to S3 bucket
-- Specify the S3 bucket and object name in `src/config.py` after `S3_BUCKET_NAME` and `S3_OBJECT_NAME`.
+Specify the S3 bucket and object name in `src/config.py` after `S3_BUCKET_NAME` and `S3_OBJECT_NAME`.
 
-- To build the Docker image, run from this directory (the root of the repo):
+To build the Docker image, run from this directory (the root of the repo):
 
 ```bash
  docker build -f app/Dockerfile -t bean .
 ```
 
-- Run the following command with your AWS credentials.
+Run the following command with your AWS credentials.
 
 ```bash
 docker run -e AWS_ACCESS_KEY_ID=<aws_key> -e AWS_SECRET_ACCESS_KEY=<aws_secret_key> bean src/write_to_s3.py
@@ -37,17 +37,17 @@ docker run -e AWS_ACCESS_KEY_ID=<aws_key> -e AWS_SECRET_ACCESS_KEY=<aws_secret_k
 ### Create the database
 Option 1. Create a local SQLite database
 
-- Go to `src/config.py`, specify `True` for `LOCAL_DB_FLAG`. 
+Go to `src/config.py`, specify `True` for `LOCAL_DB_FLAG`. 
 
-- Change the default local database path `data/bean.db` if needed.
+Change the default local database path `data/bean.db` if needed.
 
-- Build the Docker image with the command below:
+Build the Docker image with the command below:
 
 ```bash
  docker build -f app/Dockerfile -t bean .
 ```
 
-- Run the following command to create local SQLite database.
+Run the following command to create local SQLite database.
 
 ```bash
 docker run --mount type=bind,source="$(pwd)"/data,target=/app/data bean src/bean_db.py

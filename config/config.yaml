@@ -1,0 +1,44 @@
+generate_feature:
+  read_data:
+    file_path: './data/external/merged_data_cleaned.csv'
+    column_names: ['Unnamed: 0', 'Species', 'Owner.1',
+                   'Country.of.Origin', 'Farm.Name', 'Company',
+                   'Region', 'Producer', 'Grading.Date',
+                   'Processing.Method', 'Aroma', 'Flavor',
+                   'Aftertaste', 'Acidity', 'Body',
+                   'Balance', 'Uniformity', 'Clean.Cup',
+                   'Sweetness', 'Total.Cup.Points',
+                   'Moisture','Color']
+  feature_split:
+    feature_names: ['Aroma', 'Aftertaste', 'Acidity',
+                    'Sweetness', 'Moisture']
+  histogram:
+    figs_folder: './figures'
+    figs_name: 'plot.png'
+  save_csv:
+    data_path: './data/data_clean.csv'
+
+train_model:
+  get_scaler:
+    feature_scaler_path: './models/feature_scaler.pkl'
+  plot_sil_iner:
+    kmin: 2
+    kmax: 30
+    random_state: 1218
+    figs_folder: './figures'
+  train_model:
+    k_chosen: 5
+    random_state: 1218
+    save_tmo_path: './models'
+  save_csv:
+    data_path: './data/clusters.csv'
+
+evaluate_model:
+  plot_lift:
+    figs_folder: './figures/model_evaluation'
+  count_clusters:
+    figs_folder: './figures/model_evaluation'
+
+
+
+

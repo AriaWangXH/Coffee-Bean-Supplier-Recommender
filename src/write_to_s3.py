@@ -1,9 +1,9 @@
 import boto3
 import os
 import sys
-import config
 import logging.config
 import logging
+from botocore.exceptions import ClientError
 
 aws_access_key_id=os.environ.get("AWS_ACCESS_KEY_ID"),
 aws_secret_access_key=os.environ.get("AWS_SECRET_ACCESS_KEY")
@@ -11,12 +11,15 @@ aws_secret_access_key=os.environ.get("AWS_SECRET_ACCESS_KEY")
 logging.config.fileConfig(config.LOGGING_CONFIG)
 logger = logging.getLogger('write_to_s3')
 
+sys.path.append('./config')
+import config
+
 def upload_file(s3_client, data_path, s3_bucket, s3_object):
     """Upload the local data file to S3 bucket.
 
     Args:
         s3_client (:py:class:`boto3.client`): boto3 connection client
-        data_path (`str`): the path of the local data file
+        data_path (`str`): the path of the local data filex
         s3_bucket (`str`): S3 bucket name
         s3_object (`str`): S3 object name
 
@@ -42,9 +45,12 @@ if __name__ == "__main__":
 
     S3_BUCKET_NAME = config.S3_BUCKET_NAME
     S3_OBJECT_NAME = config.S3_OBJECT_NAME
+    S3_PUBLIC_KEY = config.S3_PUBLIC_KEY
+    S3_SECRET_KEY = config.S3_SECRET_KEY
     DOWNLOADED_DATA_PATH = config.DOWNLOADED_DATA_PATH
 
-    for element in [aws_access_key_id, aws_secret_access_key, S3_BUCKET_NAME, S3_OBJECT_NAME, DOWNLOADED_DATA_PATH]:
+    for element in [S3_PUBLIC_KEY, S3_SECRET_KEY, S3_BUCKET_NAME, S3_OBJECT_NAME, DOWNLOADED_DATA_PATH]:
+        print(element)
         if element is None:
             logger.error("Empty info for DOWNLOADED_DATA_PATH and S3 bucket in config.py")
             sys.exit(1)
@@ -52,8 +58,7 @@ if __name__ == "__main__":
             logger.error("Change the data type of {} to string in config.py".format(element))
             sys.exit(1)
 
-
-    boto3_client = boto3.client('s3', aws_access_key_id=S3_PUBLIC_KEY, aws_secret_access_key=S3_SECRET_KEY)
+    boto3_client = boto3.client('s3', S3_PUBLIC_KEY, S3_SECRET_KEY)
 
     try:
         upload_file(boto3_client, DOWNLOADED_DATA_PATH, S3_BUCKET_NAME, S3_OBJECT_NAME)
