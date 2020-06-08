@@ -106,6 +106,11 @@ sh run_mysql_client.sh
 
 <!-- tocstop -->
 
+- [Project Charter](#project-charter)
+- [Backlog](#backlog)
+
+<!-- tocstop -->
+
 ## Project Charter
 ### Vission
 This project aims to connect local coffee producers with wholesale coffee suppliers. While there are numerous farms that are producing coffee, it might still be difficult for the wholesale business to learn about coffee producers and find the kind of coffee that the market wants. By introducing sources of high-qulity coffee beans to the market, the 'Bean!' application helps improve the lives of local coffee producers and contributes to a thriving coffee community.
@@ -121,8 +126,10 @@ The k-means clustering models will be evaluated by comparing their sum of square
 ### Planning
 - Initiative 1. Build clustering models.
   * Epic 1. Prepare the data for analysis.
+
     + Story 1. Download the data from [this Kaggle page](https://www.kaggle.com/volpatto/coffee-quality-database-from-cqi?select=merged_data_cleaned.csv).
     + Story 2. Clean the data and correct inconsistencies due to human recording.
+    + Stroy 3. Setting up RDS to query from the app.
   * Epic 2. Conduct exploratory data analysis.
     + Story 1. Capture patterns within the data and have a basic idea of the key variables in the clustering analysis.
   * Epic 3. Develop and come up with the best clustering model.
@@ -156,6 +163,7 @@ The k-means clustering models will be evaluated by comparing their sum of square
 - Initiative3.epic2
 
 ** Explanation on the story points above:
+
 
 0 points - quick chore; 1 point ~ 1 hour (small); 2 points ~ 1/2 day (medium); 4 points ~ 1 day (large); 8 points - big and needs to be broken down more when it comes to execution.
 

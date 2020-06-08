@@ -1,5 +1,5 @@
-export MYSQL_USER=admin
-export MYSQL_PASSWORD=Wangxiaohan43!
-export MYSQL_HOST=nw-msia423-aria-wang.cd3ne4wa7jus.us-east-2.rds.amazonaws.com
+export MYSQL_USER=<YOUR-USER-NAME>
+export MYSQL_PASSWORD=<YOUR-PASSWORD>
+export MYSQL_HOST=<YOUR-DATABASE-ENDPOINT>
 export MYSQL_PORT=3306
-export DATABASE_NAME=msia_db
+export DATABASE_NAME=<YOUR-DATABASE-NAME>
