@@ -42,7 +42,7 @@ def index():
                                     'Moisture': [request.form['moisture']]})
 
             sc = pickle.load(open('models/feature_scaler.pkl', 'rb'))
-            model = pickle.load(open('models/kmeans-5-2020-06-07.pkl', 'rb'))
+            model = pickle.load(open('models/kmeans-5-2020-06-08.pkl', 'rb'))
             cluster_pred = predict_cluster(sc, entries, model)[0]
 
             bean1 = BeanAttributes(
