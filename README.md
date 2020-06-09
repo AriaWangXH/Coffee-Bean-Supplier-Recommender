@@ -67,11 +67,11 @@ The k-means clustering models will be evaluated by comparing their sum of square
   * Epic 2. Conduct A/B tests to evaluate the app's business value.
 
 ### Backlog
-- Initiative1.epic1.story1 (1 of story points) - PLANNED for next 2 weeks
-- Initiative1.epic1.story2 (2 of story points) - PLANNED for next 2 weeks
-- Initiative1.epic2.story1 (1 of story points) - PLANNED for next 2 weeks
-- Initiative1.epic3.story1 (2 of story points) - PLANNED for next 2 weeks
-- Initiative1.epic3.story3 (0 of story points) - PLANNED for next 2 weeks
+- Initiative1.epic1.story1 (1 of story points) 
+- Initiative1.epic1.story2 (2 of story points) 
+- Initiative1.epic2.story1 (1 of story points) 
+- Initiative1.epic3.story1 (2 of story points) 
+- Initiative1.epic3.story3 (0 of story points) 
 
 
 
