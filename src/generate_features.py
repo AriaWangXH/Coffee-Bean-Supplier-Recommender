@@ -11,11 +11,9 @@ import config
 import matplotlib as mpl
 import matplotlib.pyplot as plt
 import pandas as pd
-
 import datetime
 
 from cycler import cycler
-
 
 # Update matplotlib defaults to something nicer
 mpl_update = {
@@ -41,14 +39,17 @@ dateplus = lambda x: "%s-%s" % (now, x)
 logging.config.fileConfig(config.LOGGING_CONFIG)
 logger = logging.getLogger('generate-features')
 
+
 def read_data(file_path, column_names):
-    """Read the csv data file.
+    """Read the data file.
     Args:
         file_path (`str`): Location of the cloud data.
+        column_names (`:obj:`list` of :obj:`str`): List of column names to be saved to the output.
     Returns:
-        clouds_data (`pandas.DataFrame`): The cloud data in a pandas data frame.
+        bean_data (`pandas.DataFrame`): The bean data in a pandas data frame.
     """
 
+    # Check data path to be non-empty
     if not file_path:
         raise FileNotFoundError
 
@@ -62,32 +63,39 @@ def read_data(file_path, column_names):
     return bean_data
 
 
-
 def feature_split(data, feature_names):
+    """Split the data into features.
+    Args:
+        data (`pandas.DataFrame`): Full data.
+        feature_names (`:obj:`list` of :obj:`str`): List of column names to be used as features
+    Returns:
+        result (`pandas.DataFrame`): The features in a data frame
+    """
+
     result = data[feature_names]
     return result
 
 
-
 def histogram(features, figs_folder, figs_name):
-    """Create bar plots for all features against target in different classes.
+    """Create histograms for all features.
     Args:
-        features (`pd.DataFrame`): Features data frame.
-        target (`:obj:`list` of :obj:`str`): List of target variable values
+        features (`pandas.DataFrame`): Features data frame.
         figs_folder (`str`): Directory for bar plots.
         figs_name (`str`): Name for bar plots
     Returns:
         None.
     """
 
+    # Check path to store the histograms to be non-empty
     if not figs_folder or not figs_name:
         logger.warning("Directory and name for histograms should be non-empty")
 
+    # Plot histograms for all the features
     figs = []
     for feat in features.columns:
         try:
             fig, ax = plt.subplots(figsize=(12, 8))
-            ax.hist([features[feat].values])
+            ax.hist([features[feat].values], bins=40)
             ax.set_xlabel(' '.join(feat.split('_')).capitalize())
             ax.set_ylabel('Number of observations')
             fig_path = os.path.join(figs_folder, feat + '-' + dateplus(figs_name))
@@ -103,12 +111,12 @@ def histogram(features, figs_folder, figs_name):
 def save_csv(data, data_path):
     """Save the data frame.
     Args:
-        features (`pd.DataFrame`): Features data frame.
-        target (`:obj:`list` of :obj:`str`): List of target variable values
+        data (`pd.DataFrame`): Data to be stored.
         data_path (`str`): Path to save the data
     Returns:
         None.
     """
+
     if not data_path:
         raise FileNotFoundError
     try:
@@ -117,10 +125,9 @@ def save_csv(data, data_path):
         logger.error("Failed to save the data for modeling", e)
 
 
-
 if __name__ == "__main__":
     """
-    The script reads the acquired data, create bar plots for all features and split the training/test sets.
+    The script reads the acquired data and creates histograms for all the features.
     """
 
     with open(config.YAML_PATH, "r") as f:
@@ -130,7 +137,6 @@ if __name__ == "__main__":
 
     try:
         logger.debug("Loading data")
-        # path = config.DOWNLOADED_DATA_PATH
         data = read_data(**config_gf['read_data'])
     except Exception as e:
         logger.error("Error occurred while loading data from the local path.", e)
@@ -156,13 +162,3 @@ if __name__ == "__main__":
     except Exception as e:
         logger.error("Error occurred while saving the data for modeling.", e)
         sys.exit(1)
-
-    # try:
-    #     train_test_split(features, target, **config_gf['train_test_split'])
-    #     logger.info("Successfully split the features and target into training and test sets")
-    # except Exception as e:
-    #     logger.error("Error occurred while splitting training/test sets.", e)
-    #     sys.exit(1)
-
-
-

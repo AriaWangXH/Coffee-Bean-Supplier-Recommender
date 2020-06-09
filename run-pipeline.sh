@@ -1,5 +1,8 @@
 #!/usr/bin/env bash
 
+# Acquire data from S3 bucket
+python3 src/acquire_data.py
+
 # Generate features
 python3 src/generate_features.py --input=data/external/merged_data_cleaned.csv --config=config/config.yaml --output=data/data_clean.csv
 

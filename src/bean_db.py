@@ -5,13 +5,10 @@ import sqlalchemy as sql
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy import Column, Float, String, Text, Integer
-
-sys.path.append('./config')
-import config
-
 import pandas as pd
 import numpy as np
-
+sys.path.append('./config')
+import config
 
 logging.basicConfig(level=logging.INFO, format='%(name)s - %(levelname)s - %(asctime)s - %(message)s')
 logger = logging.getLogger(__file__)
@@ -50,14 +47,21 @@ class BeanAttributes(Base):
     def __repr__(self):
         return '<BeanAttributes %r>' % self.id
 
+
 def persist_to_db(engine_string):
+    """Persist the data to database.
+    Args:
+        engine_string (`str`): Engine string for SQLAlchemy.
+    Returns:
+        None.
+    """
+
     engine = sql.create_engine(engine_string)
     Base.metadata.create_all(engine)
-
     Session = sessionmaker(bind=engine)
     session = Session()
 
-    # delete all existing records in the table
+    # Delete all existing records in the table
     if config.LOCAL_DB_FLAG:
         try:
             session.execute('''DELETE FROM msia_db.bean_attributes''')
@@ -69,6 +73,7 @@ def persist_to_db(engine_string):
         except:
             pass
 
+    # Read the data table and persist it into the database
     raw_data = pd.read_csv(config.DATA_TABLE_PATH)
     raw_data = raw_data.replace(np.nan, '', regex=True)
 
@@ -101,13 +106,13 @@ def persist_to_db(engine_string):
             session.add(bean_row)
             logger.debug('Row %d added to table ' % i)
             session.commit()
-    except sql.exc.IntegrityError as e:  # Check primary key duplication
+    except sql.exc.IntegrityError:  # Check primary key duplication
         logger.error("Duplicated coffee bean")
-    # except sql.exc.OperationalError:         # Check credentials
     except Exception as e:
         logger.error("Incorrect credentials, access denied", e)
     finally:
         session.close()
+
 
 if __name__ == "__main__":
 
@@ -119,7 +124,6 @@ if __name__ == "__main__":
     port = os.environ.get("MYSQL_PORT")
     database = os.environ.get("DATABASE_NAME")
     local_database_path = config.LOCAL_DATABASE_PATH
-
 
     # Whether to create a local SQLite database or an AWS RDS database
     if config.LOCAL_DB_FLAG:

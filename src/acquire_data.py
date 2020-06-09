@@ -9,7 +9,8 @@ sys.path.append('./config')
 import config
 
 logging.config.fileConfig(config.LOGGING_CONFIG)
-logger = logging.getLogger('write_to_s3')
+logger = logging.getLogger('acquire_data')
+
 
 if __name__ == "__main__":
     """Write the data object to S3 bucket. 
@@ -17,8 +18,8 @@ if __name__ == "__main__":
 
     S3_BUCKET_NAME = config.S3_BUCKET_NAME
     S3_OBJECT_NAME = config.S3_OBJECT_NAME
-    S3_PUBLIC_KEY = os.environ.get("S3_PUBLIC_KEY")
-    S3_SECRET_KEY = os.environ.get("S3_SECRET_KEY")
+    S3_PUBLIC_KEY = config.S3_PUBLIC_KEY
+    S3_SECRET_KEY = config.S3_SECRET_KEY
     DOWNLOADED_DATA_PATH = config.DOWNLOADED_DATA_PATH
 
     # Check the elements for boto3 to be non-empty strings
@@ -30,14 +31,16 @@ if __name__ == "__main__":
             logger.error("Change the data type of {} to string in config.py".format(element))
             sys.exit(1)
 
-    s3 = boto3.client('s3', aws_access_key_id=S3_PUBLIC_KEY, aws_secret_access_key=S3_SECRET_KEY)
+    s3 = boto3.resource('s3', aws_access_key_id=S3_PUBLIC_KEY, aws_secret_access_key=S3_SECRET_KEY)
 
+    # Acquire raw data from S3
     try:
-        s3.upload_file(DOWNLOADED_DATA_PATH, S3_BUCKET_NAME, S3_OBJECT_NAME)
-        logger.info('Data successfully write to the S3 bucket {} with name {}'.format(S3_BUCKET_NAME,
-                                                                                      S3_OBJECT_NAME))
-    except ClientError as e:
-        logger.error("Error occurred with the S3 client.", e)
+        s3 = boto3.resource('s3', aws_access_key_id=S3_PUBLIC_KEY, aws_secret_access_key=S3_SECRET_KEY)
+        bucket = s3.Bucket(S3_BUCKET_NAME)
+        bucket.download_file(S3_OBJECT_NAME, DOWNLOADED_DATA_PATH)
+        logger.info("Data successfully acquired")
+    except Exception as e:
+        logger.error(e)
         sys.exit(1)
 
 

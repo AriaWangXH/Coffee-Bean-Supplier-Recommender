@@ -4,21 +4,18 @@ import logging.config
 import yaml
 import warnings
 warnings.filterwarnings('ignore')
-
-sys.path.append('./config')
-import config
-
 import pandas as pd
-
 import matplotlib as mpl
 import matplotlib.pyplot as plt
 import seaborn as sns
 from cycler import cycler
-
 import datetime
 
 now = datetime.datetime.now().strftime("%Y-%m-%d")
 dateplus = lambda x: "%s-%s" % (now, x)
+
+sys.path.append('./config')
+import config
 
 logging.config.fileConfig(config.LOGGING_CONFIG)
 logger = logging.getLogger('evaluate-model')
@@ -41,6 +38,7 @@ mpl_update = {
 }
 mpl.rcParams.update(mpl_update)
 
+
 def read_data(data_folder):
     """Read the data frame.
     Args:
@@ -49,6 +47,7 @@ def read_data(data_folder):
         df (`pandas.DataFrame`): Data frame that's read in.
     """
 
+    # Check data folder to be non-empty
     if not data_folder:
         raise FileNotFoundError
 
@@ -62,12 +61,11 @@ def read_data(data_folder):
 
 
 def plot_lift(data, feature_names, figs_folder):
-    """Calculate performance metrics for the trained model.
+    """Create lift plot of the trained model.
     Args:
-        y_test (`:obj:`list` of :obj:`int`): Directory of the data.
-        ypred_proba (`:obj:`list` of :obj:`float`): List of predicted probabilities.
-        ypred_bin (`:obj:`list` of :obj:`int`): List of predicted classes.
-        save_path (`str`): Directory to save the evaluation metrics.
+        data (`pandas.DataFrame`): Data with clusters assigned.
+        feature_names (`:obj:`list` of :obj:`str`): List of feature names.
+        figs_folder (`str`): Directory to save the lift plot.
     Returns:
         None.
     """
@@ -90,6 +88,14 @@ def plot_lift(data, feature_names, figs_folder):
 
 
 def count_clusters(data, figs_folder):
+    """Count the number of coffee beans for each cluster.
+    Args:
+        data (`pandas.DataFrame`): Data with clusters assigned.
+        figs_folder (`str`): Directory to save the result plot.
+    Returns:
+        None.
+    """
+
     cluster_counts = data.groupby('cluster').count()[['Unnamed: 0']]
     counts_path = os.path.join(figs_folder, 'cluster_counts.csv')
     cluster_counts.to_csv(counts_path, index=False)
@@ -102,7 +108,6 @@ def count_clusters(data, figs_folder):
     fig_path = os.path.join(figs_folder, 'cluster-counts-' + now + '.png')
     fig = ax.get_figure()
     fig.savefig(fig_path)
-
 
 
 if __name__ == "__main__":
@@ -123,9 +128,14 @@ if __name__ == "__main__":
         logger.error("Failed to load the trained model and prediction values.", e)
         sys.exit(1)
 
-    feature_names = config['generate_feature']['feature_split']['feature_names']
-    plot_lift(data_clusters, feature_names, **config_em['plot_lift'])
-    count_clusters(data_clusters, **config_em['count_clusters'])
-
+    try:
+        feature_names = config['generate_feature']['feature_split']['feature_names']
+        plot_lift(data_clusters, feature_names, **config_em['plot_lift'])
+        count_clusters(data_clusters, **config_em['count_clusters'])
+        logger.info("Successfully created plots for lift and cluster counts.")
+    except Exception as e:
+        logger.error("Error occurred during creating plots for lift and cluster counts.")
+        logger.error(e)
+        sys.exit(1)
 
 

@@ -4,16 +4,11 @@ import yaml
 import warnings
 import logging.config
 warnings.filterwarnings('ignore')
-
 import pandas as pd
-
 import datetime
-
 import matplotlib as mpl
 import matplotlib.pyplot as plt
-
 from cycler import cycler
-
 import sklearn
 from sklearn.preprocessing import StandardScaler
 from sklearn.cluster import KMeans
@@ -27,8 +22,8 @@ import config
 
 # Logging
 # logging.config.fileConfig(config.LOGGING_CONFIG)
-logging.basicConfig(level=logging.INFO, format='%(name)s - %(levelname)s - %(asctime)s - %(message)s')
-logger = logging.getLogger(__file__)
+logging.basicConfig(level=logging.INFO, format='%(asctime)s %(name)s %(levelname)s     %(message)s')
+logger = logging.getLogger("train-model")
 
 
 # Update matplotlib defaults to something nicer
@@ -43,9 +38,7 @@ mpl_update = {
     'axes.titlesize': 20,
     'lines.color': '#0055A7',
     'lines.linewidth': 3,
-    'text.color': '#677385',
-    'font.family': 'sans-serif',
-    'font.sans-serif': 'Tahoma'
+    'text.color': '#677385'
 }
 mpl.rcParams.update(mpl_update)
 
@@ -53,27 +46,46 @@ mpl.rcParams.update(mpl_update)
 def read_data(file_path):
     """Read the csv data file.
     Args:
-        file_path (`str`): Location of the cloud data.
+        file_path (`str`): Location of the data to be read in.
     Returns:
-        clouds_data (`pandas.DataFrame`): The cloud data in a pandas data frame.
+        bean_data (`pandas.DataFrame`): The bean data in a pandas data frame.
     """
 
+    # Check the input data path to be non-empty
     if not file_path:
         raise FileNotFoundError
 
     try:
-        clouds_data = pd.read_csv(file_path)
+        bean_data = pd.read_csv(file_path)
     except Exception as e:
         logger.error("Failed to read data from {}".format(file_path), e)
         pass
 
-    return clouds_data
+    return bean_data
+
 
 def feature_split(data, feature_names):
+    """Split the data into features.
+    Args:
+        data (`pandas.DataFrame`): Full data.
+        feature_names (`:obj:`list` of :obj:`str`): List of column names to be used as features.
+    Returns:
+        result (`pandas.DataFrame`): The features in a data frame.
+    """
+
     result = data[feature_names]
     return result
 
+
 def get_scaler(unscaled_date, feature_names, feature_scaler_path):
+    """Get the scaler user for standardizing the features.
+    Args:
+        unscaled_date (`pandas.DataFrame`): Features before scaling.
+        feature_names (`:obj:`list` of :obj:`str`): List of feature names
+    Returns:
+        feature_scaler (`sklearn.preprocessing._data.StandardScaler`): The feature scaler.
+    """
+
     scaler = StandardScaler()
     feature_scaler = scaler.fit(unscaled_date[feature_names])
 
@@ -83,13 +95,35 @@ def get_scaler(unscaled_date, feature_names, feature_scaler_path):
 
 
 def stand_feat(unscaled_date, feature_names, feature_scaler):
-    scaler = feature_scaler.fit(unscaled_date[feature_names])
-    scaled_features = scaler.transform(unscaled_date[feature_names])
-
-    return scaled_features
+    """Get the scaler user for standardizing the features.
+    Args:
+        unscaled_date (`pandas.DataFrame`): Features before scaling.
+        feature_names (`:obj:`list` of :obj:`str`): List of feature names
+        feature_scaler (`sklearn.preprocessing.StandardScaler`): The feature scaler.
+    Returns:
+        scaled_features (`pandas.DataFrame`): Features after scaling.
+    """
+    try:
+        scaler = feature_scaler.fit(unscaled_date[feature_names])
+        scaled_features = scaler.transform(unscaled_date[feature_names])
+        return scaled_features
+    except Exception as e:
+        logger.error(e)
+        return
 
 
 def plot_sil_iner(scaled_features, kmin, kmax, random_state, figs_folder):
+    """Plot silhouette and inertia scores for different number of clusters.
+    Args:
+        scaled_features (`pandas.DataFrame`): Features after scaling.
+        kmin (`int`): The minimum number of the clusters.
+        kmax (`int`): The maximum number of the clusters.
+        random_state (`int`): The random state parameter for k-means clustering
+        figs_folder (`str`): Directory for resulting figs.
+    Returns:
+        None.
+    """
+
     silhouette = []
     inertia = []
 
@@ -100,16 +134,12 @@ def plot_sil_iner(scaled_features, kmin, kmax, random_state, figs_folder):
     for k in range(kmin, kmax):
         # Create model object
         model = KMeans(n_clusters=k, random_state=random_state)
-
         # Train model object
         model.fit(scaled_features)
-
         # Get inertia calculated for trained model
         inertia.append(model.inertia_)
-
         # Calculate silhouette score of trained model
         silhouette.append(sklearn.metrics.silhouette_score(scaled_features, model.labels_))
-
         # Capture trained model object
         models[k] = model
 
@@ -129,22 +159,15 @@ def plot_sil_iner(scaled_features, kmin, kmax, random_state, figs_folder):
     fig.savefig(fig_path)
 
 
-
 def train_model(scaled_features, k_chosen, random_state, save_tmo_path):
-    """Train the classification model.
+    """Train the k-means clustering model.
     Args:
-        X_train (`pd.DataFrame`): Features in the training set.
-        y_train (`:obj:`list` of :obj:`int`): List of target values in the training set.
-        initial_features (`:obj:`list` of :obj:`str`): List of selected features.
-        method: Type of model to train. Options = ('logistic', 'svm')
-        save_tmo_path (`str`): Path to save trained model object. Optional. Default None.
-         sample_weight: array-like of shape (n_samples,) default=None. Array of weights that are assigned to individual
-                        samples. If not provided, then each sample is given unit weight.
-        **kwargs: Keyword arguments for sklearn.linear_model.LogisticRegression. Please see sklearn documentation
-                  for all possible options:
-                  https://scikit-learn.org/stable/modules/generated/sklearn.linear_model.LogisticRegression.html
+        scaled_features (`pd.DataFrame`): Data frame of scaled features.
+        k_chosen (`int`): The optimal number of clusters.
+        random_state (`int`): The random state parameter for k-means clustering
+        save_tmo_path (`str`): Path to save trained model object.
     Returns:
-        model (`sklearn.linear_model.LogisticRegression`): Trained model object.
+        kmeans_model (`sklearn.cluster.KMeans`): Trained model object.
     """
 
     logger.info('Training a K-means')
@@ -152,7 +175,6 @@ def train_model(scaled_features, k_chosen, random_state, save_tmo_path):
     try:
         kmeans_model = KMeans(n_clusters=k_chosen, random_state=random_state)
         kmeans_model.fit(scaled_features)
-        # full_data['cluster'] = kmeans_model.predict(scaled_features)
     except Exception as e:
         logger.error("Error occurred when fitting the model", e)
         pass
@@ -171,15 +193,24 @@ def train_model(scaled_features, k_chosen, random_state, save_tmo_path):
 
 
 def predict_cluster(feat_scaler, raw_features, kmeans_model):
+    """Predict the clusters.
+    Args:
+        feat_scaler (`sklearn.preprocessing._data.StandardScaler`): Scaler for standardizing the features.
+        raw_features (`pd.DataFrame`): Data frame of scaled features.
+        kmeans_model (`sklearn.cluster.KMeans`): Trained model object.
+    Returns:
+        clusters (`numpy.ndarray`): Array of predicted clusters.
+    """
+
     scaled_features = feat_scaler.transform(raw_features)
     clusters = kmeans_model.predict(scaled_features)
     return clusters
 
+
 def save_csv(data, data_path):
     """Save the data frame.
     Args:
-        features (`pd.DataFrame`): Features data frame.
-        target (`:obj:`list` of :obj:`str`): List of target variable values
+        data (`pd.DataFrame`): Data to be stored.
         data_path (`str`): Path to save the data
     Returns:
         None.
@@ -206,17 +237,32 @@ if __name__ == "__main__":
         logger.debug("Loading data")
         path_full = config['generate_feature']['save_csv']['data_path']
         data_full = read_data(path_full)
-        # feature_names = config['generate_feature']['feature_split']['feature_names']
         data_model = feature_split(data_full, **config['generate_feature']['feature_split'])
         logger.info("Successfully loaded the data for modeling")
     except Exception as e:
         logger.error("Failed to load the data for modeling.", e)
         sys.exit(1)
 
-    feature_names = config['generate_feature']['feature_split']['feature_names']
-    data_scaler = get_scaler(data_model, feature_names, **config_tm['get_scaler'])
-    data = stand_feat(data_model, feature_names, data_scaler)
-    plot_sil_iner(data, **config_tm['plot_sil_iner'])
+    try:
+        feature_names = config['generate_feature']['feature_split']['feature_names']
+        data_scaler = get_scaler(data_model, feature_names, **config_tm['get_scaler'])
+        data = stand_feat(data_model, feature_names, data_scaler)
+    except Exception as e:
+        logger.error("Failed to standardize the features")
+        logger.error(e)
+        sys.exit(1)
+
+    if not data:
+        logger.warning("Please check the column names of the data to be predicted")
+        sys.exit(1)
+
+    try:
+        plot_sil_iner(data, **config_tm['plot_sil_iner'])
+        logger.info("Successfully created and saved the silhouette and inertia plots")
+    except Exception as e:
+        logger.error("Failed to create the silhouette and inertia plots")
+        logger.error(e)
+        sys.exit(1)
 
     try:
         logger.debug("Fitting model")
@@ -227,5 +273,10 @@ if __name__ == "__main__":
         logger.error("Failed to fit the model.", e)
         sys.exit(1)
 
-    data_full['cluster'] = clusters_pred
+    try:
+        data_full['cluster'] = clusters_pred
+        logger.info("Predictions for clusters successfully created and saved")
+    except Exception as e:
+        logger.error("Failed to make predictions of the clusters")
+
     save_csv(data_full, **config_tm['save_csv'])

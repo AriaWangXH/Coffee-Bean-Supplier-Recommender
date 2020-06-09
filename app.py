@@ -16,8 +16,6 @@ app = Flask(__name__, template_folder="app/templates")
 # Configure flask app from flask_config.py
 app.config.from_pyfile('config/flaskconfig.py')
 
-# Define LOGGING_CONFIG in flask_config.py - path to config file for setting
-# up the logger (e.g. config/logging/local.conf)
 logging.config.fileConfig(app.config["LOGGING_CONFIG"])
 logger = logging.getLogger(app.config["APP_NAME"])
 logger.debug('Test log')
@@ -28,16 +26,19 @@ db = SQLAlchemy(app)
 
 @app.route('/', methods=['POST', 'GET'])
 def index():
-    """Main view that lists songs in the database.
-    Create view into index page that uses data queried from Track database and
-    inserts it into the msiapp/templates/index.html template.
+    """Main view that lists beans in the database.
+    Create view into index page that uses data queried from BeanAttribute database and
+    inserts it into the app/templates/index.html template.
     Returns: rendered html template
     """
 
     if request.method == 'POST':
         try:
-            entries = pd.DataFrame({'Aroma': [request.form['aroma']], 'Aftertaste': [request.form['aftertaste']],
-                                    'Acidity': [request.form['acidity']], 'Sweetness': [request.form['sweetness']],
+            # Insert the input entry into the database
+            entries = pd.DataFrame({'Aroma': [request.form['aroma']],
+                                    'Aftertaste': [request.form['aftertaste']],
+                                    'Acidity': [request.form['acidity']],
+                                    'Sweetness': [request.form['sweetness']],
                                     'Moisture': [request.form['moisture']]})
 
             sc = pickle.load(open('models/feature_scaler.pkl', 'rb'))
@@ -71,20 +72,20 @@ def index():
             db.session.commit()
             logger.info("New cluster predicted: {}".format(cluster_pred))
 
-            # beans = db.session.query(BeanAttributes).order_by(BeanAttributes.total_cup_point.desc()).limit(1)
-
+            # Query the beans based on the predicted cluster of input features
             beans = db.session.query(BeanAttributes).\
                 filter(BeanAttributes.cluster == 1).\
                 order_by(BeanAttributes.total_cup_point.desc()).limit(app.config["MAX_ROWS_SHOW"]).all()
-
             return render_template('index.html', beans=beans)
         except Exception as e:
             traceback.print_exc()
-            logger.error("Not able to add mew record", e)
+            logger.error("Not able to add mew record")
+            logger.error(e)
             return render_template('error.html')
 
     else:
         try:
+            # Query the beans and sort the displayed records by total cup point
             beans = db.session.query(BeanAttributes).order_by(BeanAttributes.total_cup_point.desc()).\
                 limit(app.config["MAX_ROWS_SHOW"])
             logger.info("Successfully queried from the database")

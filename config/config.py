@@ -1,3 +1,4 @@
+import os
 from os import path
 
 # Getting the parent directory of this file. That will function as the project home.
@@ -15,9 +16,9 @@ DOWNLOADED_DATA_PATH = path.join(PROJECT_HOME, 'data/external/merged_data_cleane
 
 # S3 bucket
 S3_BUCKET_NAME = 'msia423-bean'
-S3_OBJECT_NAME = 'merged_data_cleaned'
-S3_PUBLIC_KEY = 'AKIAIOFALU7CV5Z6R33Q'
-S3_SECRET_KEY = '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'
+S3_OBJECT_NAME = 'merged_data_cleaned.csv'
+S3_PUBLIC_KEY = os.environ.get("S3_PUBLIC_KEY")
+S3_SECRET_KEY = os.environ.get("S3_SECRET_KEY")
 
 # SQLite database connection config
 DATA_TABLE_PATH = path.join(PROJECT_HOME, 'data/clusters.csv')
