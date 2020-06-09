@@ -163,7 +163,7 @@ To build the Docker image, run from this directory (the root of the repo):
 Run the following command with your AWS credentials.
 
 ```bash
- docker run -e S3_PUBLIC_KEY=<your_aws_access_key> -e S3_SECRET_KEY=<your_aws_secret_key> bean src/write_to_s3.py
+ docker run -e AWS_ACCESS_KEY_ID=<your_aws_access_key> -e AWS_SECRET_ACCESS_KEY=<your_aws_secret_key> bean src/write_to_s3.py
 ```
 
 ### 3. Execute the pipeline for modeling
@@ -177,29 +177,19 @@ Build the docker image from the root of the repository with the command below:
 Execute the pipeline and reproduce the analysis using a single docker run command (fill in your aws access and secret keys):
 
 ```bash
- docker run -e S3_PUBLIC_KEY=<your_aws_access_key> -e S3_SECRET_KEY=<your_aws_secret_key> --mount type=bind,source="$(pwd)"/,target=/app/ bean run-pipeline.sh
+ docker run -e AWS_ACCESS_KEY_ID=<your_aws_access_key> -e AWS_SECRET_ACCESS_KEY=<your_aws_secret_key> --mount type=bind,source="$(pwd)"/,target=/app/ bean run-pipeline.sh
 ```
 
 ### 4. Create the database
-Option 1. Create a local SQLite database
+First, specify corresponding configurations with the following 3 options for creating the local SQLite database/RDS instance.
+
+- Option 1. Create a local SQLite database
 
 Go to `src/config.py`, specify `True` for `LOCAL_DB_FLAG`. 
 
 Change the default local database path `data/bean.db` if needed.
 
-Build the Docker image with the command below:
-
-```bash
- docker build -f app/Dockerfile -t bean .
-```
-
-Run the following command to create local SQLite database.
-
-```bash
- docker run --mount type=bind,source="$(pwd)",target=/app/ bean src/bean_db.py
-```
-
-Option 2. Create an AWS RDS database (*Note: connect to Northwestern VPN for this option*)
+- Option 2. Create an AWS RDS database (*Note: connect to Northwestern VPN for this option*)
 
 Go to `src/config.py`, specify `False` for `LOCAL_DB_FLAG`
 
@@ -220,18 +210,25 @@ Run the following command.
  source .mysqlconfig
 ```
 
-Build the Docker image with the command below:
+- Option 3. Write to your own database
+
+Configure variable `SQLALCHEMY_DATABASE_URI` in the environment with your database URI. 
+
+
+
+Second, after the configurations are down, build the Docker image and create database with the command below:
 
 ```bash
+ docker build -f app/Dockerfile -t bean .
  sh run_docker.sh
 ```
 
 #### Query a table
-Option 1. From SQLite
+- Option 1. From SQLite
 
 Query tables within SQLite with the SQLite application or through applications such as `SQLAlchemy` in Python.
 
-Option 2. From RDS
+- Option 2. From RDS
 
 After `.mysqlconfig` is set up, run the following command:
 

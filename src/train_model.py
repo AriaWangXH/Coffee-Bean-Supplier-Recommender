@@ -252,7 +252,7 @@ if __name__ == "__main__":
         logger.error(e)
         sys.exit(1)
 
-    if not data:
+    if data is None:
         logger.warning("Please check the column names of the data to be predicted")
         sys.exit(1)
 

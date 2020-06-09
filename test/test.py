@@ -12,7 +12,7 @@ def test_scaler_stand_feat_1():
     scaler = StandardScaler()
     result_true = scaler.fit_transform(df[['col1', 'col2']])
 
-    temp = get_scaler(df, ['col1', 'col2'], './test_scaler.pkl')
+    temp = get_scaler(df, ['col1', 'col2'], './test/test_scaler.pkl')
     result_test = stand_feat(df, ['col1', 'col2'], temp)
     assert (result_true == result_test).all()
 

@@ -125,13 +125,18 @@ if __name__ == "__main__":
     database = os.environ.get("DATABASE_NAME")
     local_database_path = config.LOCAL_DATABASE_PATH
 
-    # Whether to create a local SQLite database or an AWS RDS database
-    if config.LOCAL_DB_FLAG:
-        engine_string = "sqlite:///{}".format(local_database_path)
+    # If users wish to write to their own SQLALCHEMY_DATABASE_URI in the environment
+    if config.SQLALCHEMY_DATABASE_URI is None:
+        # Whether to create a local SQLite database or an AWS RDS database
+        if config.LOCAL_DB_FLAG:
+            engine_string = "sqlite:///{}".format(local_database_path)
+        else:
+            engine_string = "{}://{}:{}@{}:{}/{}".format(conn_type, user, password, host, port, database)
     else:
-        engine_string = "{}://{}:{}@{}:{}/{}".format(conn_type, user, password, host, port, database)
+        engine_string = config.SQLALCHEMY_DATABASE_URI
 
     try:
+        engine_string = 'sqlite:///data/bean.db'
         persist_to_db(engine_string)
         logger.info("Data successfully persisted into the database")
     except Exception as e:
