@@ -1,13 +1,4 @@
-- [Project Charter](#project-charter)
-  * [Vision](#vision)
-  * [Mission](#mission)
-  * [Success riteria](#success-criteria)
-- [Backlog](#backlog)
-  * [Planning](#planning)
-  * [Backlog](#backlog)
-  * [Icebox](#icebox)
-  
-  ## Project Charter
+## Project Charter
 ### Vision
 This project aims to connect local coffee producers with wholesale coffee suppliers. While there are numerous farms that are producing coffee, it might still be difficult for the wholesale business to learn about coffee producers and find the kind of coffee that the market wants. By introducing sources of high-qulity coffee beans to the market, the 'Bean!' application helps improve the lives of local coffee producers and contributes to a thriving coffee community.
 
