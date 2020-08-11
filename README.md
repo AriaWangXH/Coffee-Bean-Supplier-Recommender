@@ -1,7 +1,7 @@
 # Bean! (A Recommender for Coffee Bean Suppliers)
 
 
-<em>Developedc by Xiaohan (Aria) Wang, QA by Yige (Irene) Lai.</em>
+<em>Developed by Xiaohan (Aria) Wang, QA by Yige (Irene) Lai.</em>
 
 
 <!-- tocstop -->
