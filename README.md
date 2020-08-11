@@ -1,4 +1,4 @@
-# MSiA423 Project (Beans!) Repository
+# Bean! (A Recommender for Coffee Bean Suppliers)
 
 
 <em>Developedc by Xiaohan (Aria) Wang, QA by Yige (Irene) Lai.</em>
@@ -33,7 +33,7 @@
 <!-- tocstop -->
 
 ## Project Charter
-### Vission
+### Vision
 This project aims to connect local coffee producers with wholesale coffee suppliers. While there are numerous farms that are producing coffee, it might still be difficult for the wholesale business to learn about coffee producers and find the kind of coffee that the market wants. By introducing sources of high-qulity coffee beans to the market, the 'Bean!' application helps improve the lives of local coffee producers and contributes to a thriving coffee community.
 
 ### Mission
