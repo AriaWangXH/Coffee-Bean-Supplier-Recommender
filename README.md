@@ -6,6 +6,10 @@
 
 <!-- tocstop -->
 
+- [Project charter](#project-charter)
+  * [Vision](#vision)
+  * [Mission](#mission)
+  * [Success criteria](#success-criteria)
 - [Directory structure](#directory-structure)
 - [Running the app](#running-the-app)
   * [1. Acquire the raw data](#1-acquire-the-raw-data)
@@ -23,6 +27,17 @@
 <!-- tocstop -->
 
 <!-- tocstop -->
+
+## Project charter
+### Vision
+This project aims to connect local coffee producers with wholesale coffee suppliers. While there are numerous farms that are producing coffee, it might still be difficult for the wholesale business to learn about coffee producers and find the kind of coffee that the market wants. By introducing sources of high-qulity coffee beans to the market, the 'Bean!' application helps improve the lives of local coffee producers and contributes to a thriving coffee community.
+
+### Mission
+From the application interface, users can input their desired values of coffee bean attributes (aroma, acidicity, etc.), and then they will get a list of 10 coffee beans generated from the k-means algorithm using the data scraped from [the Coffee Quality Institute's review pages](https://database.coffeeinstitute.org/). The dataset contains reviews of 1312 arabica and 28 robusta coffee beans from the Coffee Quality Institute's trained reviewers, and users can directly contact the owners of high-quality arabica and robusta lots by following the links provided in the app.
+
+### Success criteria
+The k-means clustering models will be evaluated by comparing their sum of squares within clusters and sum of squares between clusters, and from the F and Silhouette plots. The optimal number of clusters will generate distinct groups that contains coffee beans with very similar attributes. After the best model is chosen, the business value of this application will be evaluated by the number of coffee lots that the app connects with the market. This application will be considered as a success if at least 10% of the coffee bean producers are contacted from the link in the app.
+
 
 
 ## Directory structure 
